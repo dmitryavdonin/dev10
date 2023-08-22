@@ -1,0 +1,1 @@
+newman run ./test/"dz10.postman_collection.json"

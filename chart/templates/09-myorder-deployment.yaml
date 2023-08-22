@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myorder-app
+spec:
+  replicas: {{ .Values.myorder.replicaCount}}
+  selector:
+    matchLabels:
+      app: myorder-app
+  template:
+    metadata:
+      labels:
+        app: myorder-app
+    spec:
+      containers:
+      - name: myorder-app
+        image: {{ .Values.myorder.container.image}}
+        imagePullPolicy: Always
+        ports:
+          - name: http
+            containerPort: {{ .Values.myorder.port}}
+        envFrom:
+          - configMapRef:
+              name: myorder-app-config
+          - secretRef:
+              name: myorder-postgres-secret

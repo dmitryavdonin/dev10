@@ -1,0 +1,516 @@
+{
+	"info": {
+		"_postman_id": "bb71d21d-ce94-4963-9fac-569798f8a91f",
+		"name": "dz10",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "795865",
+		"_collection_link": "https://otus-dmitryavdonin.postman.co/workspace/otus~82993246-0f01-4d25-adef-9e5b9e2d034b/collection/795865-bb71d21d-ce94-4963-9fac-569798f8a91f?action=share&source=collection_link&creator=795865"
+	},
+	"item": [
+		{
+			"name": "Создать пользователя 1 в биллинге",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Создать пользователя в биллинге\", function () {\r",
+							"    var resp = JSON.parse(responseBody)\r",
+							"    console.log(resp);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"user_id\": {{user1_id}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlBilling}}/billing/account",
+					"host": [
+						"{{baseUrlBilling}}"
+					],
+					"path": [
+						"billing",
+						"account"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Положить 10 на баланс пользователя 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Положить 10 на баланс пользователя 1\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    console.log(resp);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"user_id\": {{user1_id}},\r\n  \"amount\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlBilling}}/billing/deposit",
+					"host": [
+						"{{baseUrlBilling}}"
+					],
+					"path": [
+						"billing",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить баланс пользователя после пополнения",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверить баланс пользователя после пополнения\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    var orig = pm.collectionVariables.get(\"original_balance\");\r",
+							"    console.log(\"original balance = \" + orig);    \r",
+							"    console.log(resp);        \r",
+							"    pm.expect(resp.balance).to.eql(10);  \r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlBilling}}/billing/account/:id",
+					"host": [
+						"{{baseUrlBilling}}"
+					],
+					"path": [
+						"billing",
+						"account",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{user1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Создать заказ (достаточно средств 5)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Создать заказ (достаточно средств 5)\", function () {\r",
+							"    var resp = JSON.parse(responseBody)\r",
+							"    console.log(resp);\r",
+							"    pm.collectionVariables.set(\"order1_id\", resp[\"id\"]);\r",
+							"    pm.expect(resp.status).to.eql(\"pending\");\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"user_id\": {{user1_id}},\r\n  \"price\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlOrder}}/order",
+					"host": [
+						"{{baseUrlOrder}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить баланс пользователя после заказа 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверить баланс пользователя после заказа 1\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    console.log(resp);\r",
+							"    pm.expect(resp.balance).to.eql(5);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(function(){}, 1000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlBilling}}/billing/account/:id",
+					"host": [
+						"{{baseUrlBilling}}"
+					],
+					"path": [
+						"billing",
+						"account",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{user1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить нотификацию по заказу 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверить нотификацию по заказу 1\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    console.log(resp);\r",
+							"    pm.expect(resp.message).to.eql(\"Order status = success\");  \r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlNotification}}/notification/:id",
+					"host": [
+						"{{baseUrlNotification}}"
+					],
+					"path": [
+						"notification",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{order1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Создать заказ (недостаточно средств 10)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Создать заказ (недостаточно средств 10)\", function () {\r",
+							"    var resp = JSON.parse(responseBody)\r",
+							"    console.log(resp);\r",
+							"    pm.collectionVariables.set(\"order2_id\", resp[\"id\"]);\r",
+							"    pm.expect(resp.status).to.eql(\"pending\");\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"user_id\": {{user1_id}},\r\n  \"price\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlOrder}}/order",
+					"host": [
+						"{{baseUrlOrder}}"
+					],
+					"path": [
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить баланс пользователя после заказа 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверить баланс пользователя после заказа 2\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    console.log(resp);\r",
+							"    pm.expect(resp.balance).to.eql(5);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(function(){}, 1000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlBilling}}/billing/account/:id",
+					"host": [
+						"{{baseUrlBilling}}"
+					],
+					"path": [
+						"billing",
+						"account",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{user1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить нотификацию по заказу 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверить нотификацию по заказу 2\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    console.log(resp);\r",
+							"    pm.expect(resp.message).to.eql(\"Order status = failed, reason = Out of balance\");  \r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlNotification}}/notification/:id",
+					"host": [
+						"{{baseUrlNotification}}"
+					],
+					"path": [
+						"notification",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{order2_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Просмотреть транзакции в биллинге",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Просмотреть транзакции в биллинге\", function () {\r",
+							"    var resp = JSON.parse(responseBody);\r",
+							"    console.log(resp);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlBilling}}/billing/transaction/:id",
+					"host": [
+						"{{baseUrlBilling}}"
+					],
+					"path": [
+						"billing",
+						"transaction",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{user1_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrlBilling",
+			"value": "http://arch.homework",
+			"type": "string"
+		},
+		{
+			"key": "baseUrlOrder",
+			"value": "http://arch.homework",
+			"type": "string"
+		},
+		{
+			"key": "baseUrlNotification",
+			"value": "http://arch.homework",
+			"type": "string"
+		},
+		{
+			"key": "order1_id",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "order2_id",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "user1_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "billing_id",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "original_balance",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "balance_before_order",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "balance_after_order",
+			"value": "0",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,74 @@
+billing:
+  replicaCount: "1"
+  port: 8000
+  container:
+    image: dmitryavdonin/otus-dz10-billing:latest
+notification:
+  replicaCount: "1"
+  port: 8000
+  container:
+    image: dmitryavdonin/otus-dz10-notification:latest
+myorder:
+  replicaCount: "1"
+  port: 8000
+  container:
+    image: dmitryavdonin/otus-dz10-myorder:1.0.1
+
+billingdb:
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 15.2.0-debian-11-r16
+    digest: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+    debug: false
+  auth:
+    enablePostgresUser: true
+    postgresPassword: "manager"
+    username: "postgres"
+    password: "manager"
+    database: "postgres"
+  architecture: standalone
+  containerPorts:
+    postgresql: "5432"
+
+notificationdb:
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 15.2.0-debian-11-r16
+    digest: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+    debug: false
+  auth:
+    enablePostgresUser: true
+    postgresPassword: "manager"
+    username: "postgres"
+    password: "manager"
+    database: "postgres"
+  architecture: standalone
+  containerPorts:
+    postgresql: "5432"
+
+myorderdb:
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 15.2.0-debian-11-r16
+    digest: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+    debug: false
+  auth:
+    enablePostgresUser: true
+    postgresPassword: "manager"
+    username: "postgres"
+    password: "manager"
+    database: "postgres"
+  architecture: standalone
+  containerPorts:
+    postgresql: "5432"
+
+  

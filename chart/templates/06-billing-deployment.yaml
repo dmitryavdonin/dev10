@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-app
+spec:
+  replicas: {{ .Values.billing.replicaCount}}
+  selector:
+    matchLabels:
+      app: billing-app
+  template:
+    metadata:
+      labels:
+        app: billing-app
+    spec:
+      containers:
+      - name: billing-app
+        image: {{ .Values.billing.container.image}}
+        imagePullPolicy: Always
+        ports:
+          - name: http
+            containerPort: {{ .Values.billing.port}}
+        envFrom:
+          - configMapRef:
+              name: billing-app-config
+          - secretRef:
+              name: billing-postgres-secret
